@@ -22,7 +22,7 @@ app.use("/api/admin", adminRoutes);
 app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
-    service: "minority-claim-server",
+    service: "minority-report-server",
     timestamp: new Date().toISOString(),
   });
 });
@@ -42,7 +42,7 @@ app.use((err, _req, res, _next) => {
 app.listen(PORT, () => {
   console.log("\x1b[36m");
   console.log("╔══════════════════════════════════════════════╗");
-  console.log("║       MINORITY CLAIM — Risk Engine API       ║");
+  console.log("║       MINORITY REPORT — Risk Engine API       ║");
   console.log(`║       Listening on http://localhost:${PORT}      ║`);
   console.log("╚══════════════════════════════════════════════╝");
   console.log("\x1b[0m");
