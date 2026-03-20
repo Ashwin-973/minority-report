@@ -1,6 +1,7 @@
 {
   "name": "minority-claim",
   "version": "1.0.0",
+  "type": "module",
   "description": "Parametric insurance fraud detection MVP",
   "scripts": {
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",
