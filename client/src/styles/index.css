@@ -1,1 +1,217 @@
 @import "tailwindcss";
+
+/* ── Tailwind v4 theme tokens (replaces tailwind.config.js) ──────── */
+@theme {
+  /* Font families */
+  --font-display: "'Barlow Condensed'", sans-serif;
+  --font-body:    "'DM Sans'", sans-serif;
+  --font-mono:    "'DM Mono'", monospace;
+
+  /* Colors */
+  --color-void:           #03040a;
+  --color-abyss:          #080c18;
+  --color-navy:           #0d1530;
+  --color-electric-red:   #e8170c;
+  --color-electric-blue:  #0c2fe8;
+  --color-signal-green:   #00ff88;
+  --color-signal-yellow:  #f5c400;
+  --color-signal-red:     #ff2d2d;
+  --color-iris-1:         rgba(120, 180, 255, 0.35);
+  --color-iris-2:         rgba(200, 130, 255, 0.25);
+
+  /* Animations */
+  --animate-pulse-slow:   pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-slow:    spin 8s linear infinite;
+  --animate-float:        float 6s ease-in-out infinite;
+  --animate-scan:         scan 2s linear infinite;
+  --animate-flicker:      flicker 4s step-end infinite;
+  --animate-blink-border: blinkBorder 1.5s ease-in-out infinite;
+  --animate-reveal-up:    revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-marquee:      marquee 20s linear infinite;
+
+  /* Keyframes (nested inside @theme so Tailwind owns them) */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50%       { transform: translateY(-18px) rotate(3deg); }
+  }
+  @keyframes scan {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96%            { opacity: 0.4; }
+    97%            { opacity: 1; }
+    98%            { opacity: 0.2; }
+    99%            { opacity: 1; }
+  }
+  @keyframes blinkBorder {
+    0%, 100% {
+      border-color: rgba(255, 45, 45, 0.9);
+      box-shadow:   0 0 20px rgba(255, 45, 45, 0.5);
+    }
+    50% {
+      border-color: rgba(255, 45, 45, 0.2);
+      box-shadow:   0 0 5px rgba(255, 45, 45, 0.1);
+    }
+  }
+  @keyframes revealUp {
+    0%   { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+/* ── Base layer: resets + global element styles ───────────────────── */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: #ffffff;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  ::-webkit-scrollbar       { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--color-void); }
+  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 2px; }
+}
+
+/* ── Custom cursor ───────────────────────────────────────────────── */
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease;
+  mix-blend-mode: difference;
+}
+
+.cursor-ring {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease;
+  mix-blend-mode: difference;
+}
+
+/* ── Glassmorphic card ───────────────────────────────────────────── */
+.glass-card {
+  background: rgba(13, 21, 48, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Iridescent orb ──────────────────────────────────────────────── */
+.iris-orb {
+  background: conic-gradient(
+    from 0deg,
+    rgba(120, 180, 255, 0.6),
+    rgba(200, 130, 255, 0.5),
+    rgba(255, 100, 150, 0.4),
+    rgba(100, 255, 200, 0.5),
+    rgba(120, 180, 255, 0.6)
+  );
+  filter: blur(1px);
+}
+
+/* ── Display type ────────────────────────────────────────────────── */
+.display-text {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.88;
+}
+
+/* ── Noise overlay ───────────────────────────────────────────────── */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 1;
+}
+
+/* ── Gradient text ───────────────────────────────────────────────── */
+.text-gradient-red-blue {
+  background: linear-gradient(135deg, #e8170c 0%, #8b00ff 50%, #0c2fe8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Scan line ───────────────────────────────────────────────────── */
+.scan-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.4), transparent);
+  animation: scan 4s linear infinite;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ── Risk badge ──────────────────────────────────────────────────── */
+.risk-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+/* ── Marquee ─────────────────────────────────────────────────────── */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+/* ── Claim card hover ────────────────────────────────────────────── */
+.claim-card-inner {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.claim-card-inner:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Section separator ───────────────────────────────────────────── */
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* ── Stagger helpers ─────────────────────────────────────────────── */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
