@@ -1,57 +1,72 @@
 import React, { useState } from "react";
 import { submitClaim } from "../api/claimApi.js";
 import RiskBadge from "./RiskBadge.jsx";
-import { WORKERS } from "../mock/workers.js";
 import { WEATHER_ZONES } from "../mock/weatherZones.js";
 
-const INCIDENT_TYPES = ["RAIN_DAMAGE", "ACCIDENT", "THEFT", "FLOOD_DAMAGE"];
+const INCIDENT_TYPES = [
+  "RAIN_INCOME_LOSS",
+  "HEAT_INCOME_LOSS",
+  "FLOOD_INCOME_LOSS",
+  "AQI_INCOME_LOSS",
+  "CURFEW_INCOME_LOSS",
+  "STRIKE_INCOME_LOSS",
+];
+
+const INCIDENT_LABELS = {
+  RAIN_INCOME_LOSS: "Rain — Unable to Deliver",
+  HEAT_INCOME_LOSS: "Extreme Heat — Unsafe Conditions",
+  FLOOD_INCOME_LOSS: "Flooding — Roads Blocked",
+  AQI_INCOME_LOSS: "Air Quality — Health Hazard",
+  CURFEW_INCOME_LOSS: "Curfew — Movement Restricted",
+  STRIKE_INCOME_LOSS: "Strike — Operations Halted",
+};
 
 const SCENARIOS = [
   {
-    label: "LEGITIMATE CLAIM",
+    label: "LEGITIMATE — RAIN LOSS",
     color: "text-signal-green",
-    description: "Normal delivery worker, matching weather data",
+    description: "Worker can't deliver due to heavy rain — genuine income loss",
     preset: {
-      workerId: "W010",
-      workerName: "Demo Worker (Legit)",
+      workerId: "W001",
+      workerName: "Arjun Mehta",
       telemetry: { lat: 13.0569, lng: 80.2425, previousLat: 13.052, previousLng: 80.238, previousTimestamp: new Date(Date.now() - 30 * 60000).toISOString(), motionScore: 0.78, connectivityType: "4G", networkFingerprint: "fp_legit_001", deviceId: "dev_legit" },
-      incident: { claimedSeverity: 3, incidentType: "RAIN_DAMAGE", description: "Package damaged in heavy rain.", zoneId: "ZONE_SOUTH_CHENNAI" },
+      incident: { claimedSeverity: 3, incidentType: "RAIN_INCOME_LOSS", description: "Heavy rainfall — unable to complete deliveries, lost 4 hours of income.", zoneId: "ZONE_SOUTH_CHENNAI" },
     },
   },
   {
-    label: "GPS TELEPORT",
+    label: "GPS TELEPORT FRAUD",
     color: "text-signal-red",
-    description: "Device jumps 350km in 10 minutes",
+    description: "Spoofed location — device jumps 350km in 10 min",
     preset: {
       workerId: "W011",
       workerName: "Demo Worker (Teleport)",
       telemetry: { lat: 13.0827, lng: 80.2707, previousLat: 12.9716, previousLng: 77.5946, previousTimestamp: new Date(Date.now() - 10 * 60000).toISOString(), motionScore: 0.09, connectivityType: "WiFi", networkFingerprint: "fp_spoof_hub_01", deviceId: "dev_teleport" },
-      incident: { claimedSeverity: 5, incidentType: "RAIN_DAMAGE", description: "Cyclone destroyed all packages.", zoneId: "ZONE_CENTRAL_CHENNAI" },
+      incident: { claimedSeverity: 5, incidentType: "RAIN_INCOME_LOSS", description: "Claims severe weather caused full-day income loss.", zoneId: "ZONE_CENTRAL_CHENNAI" },
     },
   },
   {
     label: "CLUSTER ATTACK",
     color: "text-signal-red",
-    description: "Same GPS + shared WiFi fingerprint as known ring",
+    description: "Coordinated fraud — same GPS + shared WiFi fingerprint",
     preset: {
       workerId: "W012",
       workerName: "Demo Worker (Cluster)",
       telemetry: { lat: 13.0829, lng: 80.2705, previousLat: 13.083, previousLng: 80.2706, previousTimestamp: new Date(Date.now() - 15 * 60000).toISOString(), motionScore: 0.07, connectivityType: "WiFi", networkFingerprint: "fp_spoof_hub_01", deviceId: "dev_cluster_new" },
-      incident: { claimedSeverity: 5, incidentType: "FLOOD_DAMAGE", description: "All packages destroyed by flooding.", zoneId: "ZONE_CENTRAL_CHENNAI" },
+      incident: { claimedSeverity: 5, incidentType: "FLOOD_INCOME_LOSS", description: "Claims flood destroyed all delivery capability.", zoneId: "ZONE_CENTRAL_CHENNAI" },
     },
   },
 ];
 
 export default function ClaimForm({ onClaimSubmitted }) {
   const [form, setForm] = useState({
-    workerId: "W009",
-    workerName: "New Worker",
+    workerId: "W001",
+    workerName: "Arjun Mehta",
     lat: "13.0900",
     lng: "80.2785",
     motionScore: "0.75",
     connectivityType: "4G",
     claimedSeverity: "3",
-    incidentType: "RAIN_DAMAGE",
+    incidentType: "RAIN_INCOME_LOSS",
     description: "",
     zoneId: "ZONE_SOUTH_CHENNAI",
   });
@@ -89,23 +104,23 @@ export default function ClaimForm({ onClaimSubmitted }) {
       const payload = preset
         ? { ...preset }
         : {
-            workerId: form.workerId,
-            workerName: form.workerName,
-            telemetry: {
-              lat: parseFloat(form.lat),
-              lng: parseFloat(form.lng),
-              motionScore: parseFloat(form.motionScore),
-              connectivityType: form.connectivityType,
-              networkFingerprint: `fp_${form.workerId}_${Date.now()}`,
-              deviceId: `dev_${form.workerId}`,
-            },
-            incident: {
-              claimedSeverity: parseInt(form.claimedSeverity),
-              incidentType: form.incidentType,
-              description: form.description,
-              zoneId: form.zoneId,
-            },
-          };
+          workerId: form.workerId,
+          workerName: form.workerName,
+          telemetry: {
+            lat: parseFloat(form.lat),
+            lng: parseFloat(form.lng),
+            motionScore: parseFloat(form.motionScore),
+            connectivityType: form.connectivityType,
+            networkFingerprint: `fp_${form.workerId}_${Date.now()}`,
+            deviceId: `dev_${form.workerId}`,
+          },
+          incident: {
+            claimedSeverity: parseInt(form.claimedSeverity),
+            incidentType: form.incidentType,
+            description: form.description,
+            zoneId: form.zoneId,
+          },
+        };
 
       const data = await submitClaim(payload);
       setResult(data.claim.riskResult);
@@ -125,9 +140,9 @@ export default function ClaimForm({ onClaimSubmitted }) {
       <div className="px-6 pt-6 pb-4 border-b border-white/6">
         <div className="flex items-center gap-2 mb-1">
           <span className="w-1.5 h-1.5 rounded-full bg-electric-blue animate-pulse" />
-          <span className="font-mono text-[10px] text-white/35 uppercase tracking-widest">Claim Submission Terminal</span>
+          <span className="font-mono text-[10px] text-white/35 uppercase tracking-widest">Income Loss Claim Terminal</span>
         </div>
-        <h2 className="display-text text-3xl text-white">SUBMIT CLAIM</h2>
+        <h2 className="display-text text-3xl text-white">FILE CLAIM</h2>
       </div>
 
       <div className="p-6">
@@ -191,13 +206,13 @@ export default function ClaimForm({ onClaimSubmitted }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="font-mono text-[9px] text-white/35 uppercase tracking-wider block mb-1">Claimed Severity (0–5)</label>
+              <label className="font-mono text-[9px] text-white/35 uppercase tracking-wider block mb-1">Impact Severity (0–5)</label>
               <input className={inp} type="number" min="0" max="5" value={form.claimedSeverity} onChange={e => setForm(f => ({ ...f, claimedSeverity: e.target.value, _preset: null }))} />
             </div>
             <div>
-              <label className="font-mono text-[9px] text-white/35 uppercase tracking-wider block mb-1">Incident Type</label>
+              <label className="font-mono text-[9px] text-white/35 uppercase tracking-wider block mb-1">Income Loss Type</label>
               <select className={inp} value={form.incidentType} onChange={e => setForm(f => ({ ...f, incidentType: e.target.value, _preset: null }))}>
-                {INCIDENT_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
+                {INCIDENT_TYPES.map(t => <option key={t} value={t}>{INCIDENT_LABELS[t] || t.replace(/_/g, " ")}</option>)}
               </select>
             </div>
           </div>
@@ -211,7 +226,7 @@ export default function ClaimForm({ onClaimSubmitted }) {
 
           <div>
             <label className="font-mono text-[9px] text-white/35 uppercase tracking-wider block mb-1">Description</label>
-            <textarea className={`${inp} resize-none h-16`} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value, _preset: null }))} placeholder="Incident description…" />
+            <textarea className={`${inp} resize-none h-16`} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value, _preset: null }))} placeholder="Describe how the disruption caused income loss…" />
           </div>
 
           <button
@@ -230,15 +245,18 @@ export default function ClaimForm({ onClaimSubmitted }) {
 
         {/* Result panel */}
         {result && (
-          <div className={`mt-5 p-4 rounded-sm border ${
-            result.claimStatus === "FLAGGED" ? "border-signal-red/40 bg-signal-red/5" :
-            result.claimStatus === "MANUAL_REVIEW" ? "border-signal-yellow/40 bg-signal-yellow/5" :
-            "border-signal-green/40 bg-signal-green/5"
-          }`}>
+          <div className={`mt-5 p-4 rounded-sm border ${result.claimStatus === "FLAGGED" ? "border-signal-red/40 bg-signal-red/5" :
+              result.claimStatus === "MANUAL_REVIEW" ? "border-signal-yellow/40 bg-signal-yellow/5" :
+                "border-signal-green/40 bg-signal-green/5"
+            }`}>
             <div className="flex items-center justify-between mb-3">
               <span className="font-mono text-[9px] text-white/35 uppercase tracking-widest">Engine Decision</span>
               <RiskBadge score={result.riskScore} status={result.claimStatus} size="lg" />
             </div>
+
+            {result.claimStatus === "APPROVED" && (
+              <p className="font-mono text-[10px] text-signal-green mb-2">✓ Income loss claim approved — payout will be initiated automatically</p>
+            )}
 
             {result.fraudSignals?.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-3">

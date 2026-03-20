@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes.jsx";
-import Navbar from "./components/Navbar.jsx";
+import NavBar from "./components/NavBar.jsx";
 
 function CursorFollower() {
   const dotRef = useRef(null);
@@ -46,7 +46,7 @@ export default function App() {
     <BrowserRouter>
       <CursorFollower />
       <div className="scan-line" />
-      <Navbar />
+      <NavBar />
       <AppRoutes />
     </BrowserRouter>
   );

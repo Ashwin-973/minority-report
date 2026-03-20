@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const NAV_LINKS = [
+  { path: "/onboarding", label: "ONBOARD" },
   { path: "/worker", label: "WORKER" },
+  { path: "/policy", label: "POLICY" },
   { path: "/admin", label: "ADMIN" },
   { path: "/analytics", label: "ANALYTICS" },
 ];
@@ -30,11 +32,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
           ? "bg-void/95 backdrop-blur-md border-b border-white/5"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="flex items-center justify-between px-6 md:px-10 h-14">
         {/* Logo */}
@@ -66,17 +67,15 @@ export default function Navbar() {
               key={path}
               to={path}
               className={({ isActive }) =>
-                `font-display font-700 text-sm tracking-widest transition-all duration-200 relative group ${
-                  isActive ? "text-white" : "text-white/45 hover:text-white/80"
+                `font-display font-700 text-sm tracking-widest transition-all duration-200 relative group ${isActive ? "text-white" : "text-white/45 hover:text-white/80"
                 }`
               }
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
             >
               {label}
               <span
-                className={`absolute -bottom-0.5 left-0 h-px bg-signal-green transition-all duration-300 ${
-                  location.pathname === path ? "w-full" : "w-0 group-hover:w-full"
-                }`}
+                className={`absolute -bottom-0.5 left-0 h-px bg-signal-green transition-all duration-300 ${location.pathname === path ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
               />
             </NavLink>
           ))}
